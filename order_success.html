@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmed - thriftIN</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a1a 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .success-container {
+            max-width: 600px;
+            text-align: center;
+            padding: 40px;
+            background: rgba(17, 17, 17, 0.95);
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(45deg, #00d4aa, #00a8ff);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 30px;
+            font-size: 40px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .success-title {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            background: linear-gradient(45deg, #00d4aa, #00a8ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .success-message {
+            font-size: 1.1rem;
+            color: #ccc;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .order-details {
+            background: rgba(0,0,0,0.3);
+            padding: 25px;
+            border-radius: 10px;
+            margin: 30px 0;
+            text-align: left;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #00d4aa, #00a8ff);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,212,170,0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .tracking-info {
+            background: rgba(255,193,7,0.1);
+            border: 1px solid rgba(255,193,7,0.3);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            color: #ffc107;
+        }
+
+        .loading-animation {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: #00d4aa;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 480px) {
+            .success-container {
+                margin: 20px;
+                padding: 30px 20px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="success-container">
+        <div class="success-icon">
+            ✓
+        </div>
+        
+        <h1 class="success-title">Order Confirmed!</h1>
+        
+        <p class="success-message">
+            Thank you for your purchase! Your payment has been processed successfully 
+            and your order is being prepared for shipping.
+        </p>
+
+        <div class="order-details" id="orderDetails">
+            <div class="loading-animation"></div>
+            Loading order details...
+        </div>
+
+        <div class="tracking-info">
+            <strong>📦 What's Next?</strong><br>
+            You'll receive an email confirmation shortly with tracking information. 
+            We'll notify you once your order ships!
+        </div>
+
+        <div class="action-buttons">
+            <a href="products_page.html" class="btn btn-secondary">Continue Shopping</a>
+            <a href="#" id="trackOrderBtn" class="btn btn-primary">Track Your Order</a>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            loadOrderDetails();
+        });
+
+        function loadOrderDetails() {
+            // Get order ID from URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const orderId = urlParams.get('order_id');
+
+            if (!orderId) {
+                document.getElementById('orderDetails').innerHTML = `
+                    <div style="text-align: center; color: #ff6b7a;">
+                        Order ID not found. Please check your email for order confirmation.
+                    </div>
+                `;
+                return;
+            }
+
+            // Fetch order details (you'll need to create this endpoint)
+            fetch(`get_order_details.php?order_id=${orderId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        displayOrderDetails(data.order);
+                        setupTrackingButton(orderId);
+                    } else {
+                        throw new Error(data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading order details:', error);
+                    document.getElementById('orderDetails').innerHTML = `
+                        <div class="detail-row">
+                            <span>Order ID:</span>
+                            <span>#${orderId}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span>Status:</span>
+                            <span style="color: #00d4aa;">Confirmed</span>
+                        </div>
+                        <div class="detail-row">
+                            <span>Payment:</span>
+                            <span style="color: #00d4aa;">Completed</span>
+                        </div>
+                    `;
+                    setupTrackingButton(orderId);
+                });
+        }
+
+        function displayOrderDetails(order) {
+            const orderDetailsEl = document.getElementById('orderDetails');
+            
+            const orderDate = new Date(order.created_at).toLocaleDateString('en-IN', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            orderDetailsEl.innerHTML = `
+                <div class="detail-row">
+                    <span>Order ID:</span>
+                    <span>#${order.order_id}</span>
+                </div>
+                <div class="detail-row">
+                    <span>Order Date:</span>
+                    <span>${orderDate}</span>
+                </div>
+                <div class="detail-row">
+                    <span>Payment ID:</span>
+                    <span style="font-family: monospace; font-size: 0.9rem;">${order.payment_id || 'Processing'}</span>
+                </div>
+                <div class="detail-row">
+                    <span>Status:</span>
+                    <span style="color: #00d4aa;">${getStatusDisplay(order.order_status)}</span>
+                </div>
+                <div class="detail-row">
+                    <span>Shipping Address:</span>
+                    <span style="font-size: 0.9rem;">
+                        ${order.address_full_name}<br>
+                        ${order.address_line1}${order.address_line2 ? ', ' + order.address_line2 : ''}<br>
+                        ${order.address_city}, ${order.address_state} - ${order.address_pincode}
+                    </span>
+                </div>
+                <div class="detail-row">
+                    <span>Total Amount:</span>
+                    <span style="color: #00d4aa;">₹${Number(order.total_amount).toLocaleString()}</span>
+                </div>
+            `;
+        }
+
+        function getStatusDisplay(status) {
+            const statusMap = {
+                'created': 'Order Created',
+                'pending': 'Payment Pending',
+                'paid': 'Payment Confirmed',
+                'processing': 'Processing',
+                'shipped': 'Shipped',
+                'delivered': 'Delivered',
+                'cancelled': 'Cancelled',
+                'refunded': 'Refunded'
+            };
+            return statusMap[status] || status;
+        }
+
+        function setupTrackingButton(orderId) {
+            const trackBtn = document.getElementById('trackOrderBtn');
+            trackBtn.href = `track_order.html?order_id=${orderId}`;
+        }
+
+        // Auto-redirect after 30 seconds (optional)
+        setTimeout(() => {
+            const redirectBanner = document.createElement('div');
+            redirectBanner.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background: rgba(0,0,0,0.9);
+                color: white;
+                padding: 15px 20px;
+                border-radius: 8px;
+                border-left: 4px solid #00d4aa;
+                z-index: 1000;
+                font-size: 0.9rem;
+            `;
+            redirectBanner.innerHTML = `
+                <strong>Keep Shopping!</strong><br>
+                <a href="products_page.html" style="color: #00d4aa; text-decoration: none;">
+                    Discover more amazing deals →
+                </a>
+            `;
+            document.body.appendChild(redirectBanner);
+            
+            setTimeout(() => {
+                redirectBanner.remove();
+            }, 10000);
+        }, 30000);
+    </script>
+</body>
+</html>

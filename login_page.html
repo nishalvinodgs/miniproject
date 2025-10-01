@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - 2nd Street India</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #000 0%, #111 50%, #000 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated Background Particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #fff;
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+            opacity: 0.3;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            z-index: 1000;
+            padding: 15px 0;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .logo { font-size: 25px; font-weight: bold; color: #fff; text-decoration: none; animation: glow 2s ease-in-out infinite alternate; }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 5px #fff, 0 0 10px #fff; }
+            to { text-shadow: 0 0 10px #fff, 0 0 20px #fff; }
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+
+        .nav-menu a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .nav-menu a:hover {
+            color: #ccc;
+            transform: translateY(-2px);
+        }
+
+        /* Login Container */
+        .login-container {
+            background: rgba(17, 17, 17, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 100%;
+            max-width: 500px;
+            margin: 20px;
+            animation: slideIn 0.8s ease-out;
+            margin-top: 100px;
+            margin-bottom: 50px;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-title {
+            font-size: 2.5rem;
+            color: #fff;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .login-subtitle {
+            color: #ccc;
+            font-size: 1rem;
+        }
+
+        /* User Type Selection */
+        .user-type-selection {
+            margin-bottom: 30px;
+        }
+
+        .user-type-label {
+            color: #fff;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            display: block;
+            font-weight: 500;
+        }
+
+        .user-type-options {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .user-type-option {
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .user-type-radio {
+            display: none;
+        }
+
+        .user-type-button {
+            display: block;
+            width: 100%;
+            padding: 12px 15px;
+            background: transparent;
+            border: 2px solid #333;
+            color: #ccc;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .user-type-radio:checked + .user-type-button {
+            background: #111;
+            color: #fff;
+            border-color: #fff;
+            transform: scale(1.02);
+            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2);
+        }
+
+        .user-type-button:hover {
+            border-color: #fff;
+            color: #fff;
+        }
+
+        /* Form Styles */
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .form-group {
+            position: relative;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .form-input:focus {
+            border-color: #fff;
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: #888;
+        }
+
+        .form-label {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #888;
+            transition: all 0.3s ease;
+            pointer-events: none;
+            background: rgba(17, 17, 17, 0.9);
+            padding: 0 5px;
+        }
+
+        .form-input:focus + .form-label,
+        .form-input:not(:placeholder-shown) + .form-label {
+            top: 0;
+            font-size: 0.8rem;
+            color: #fff;
+        }
+
+        /* Checkbox */
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .checkbox {
+            width: 18px;
+            height: 18px;
+            accent-color: #fff;
+        }
+
+        .checkbox-label {
+            color: #ccc;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        /* Login Button */
+        .login-button {
+            padding: 15px 30px;
+            background: linear-gradient(45deg, #1a1a1a, #2a2a2a);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .login-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(45deg, #2a2a2a, #3a3a3a);
+        }
+
+        .login-button:active {
+            transform: translateY(0);
+        }
+
+        /* Links */
+        .form-links {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .form-link {
+            color: #ccc;
+            text-decoration: none;
+            font-size: 0.9rem;
+            margin: 0 10px;
+            transition: color 0.3s ease;
+        }
+
+        .form-link:hover {
+            color: #fff;
+            text-decoration: underline;
+        }
+
+        .divider {
+            margin: 20px 0;
+            text-align: center;
+            color: #666;
+            position: relative;
+        }
+
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #333;
+        }
+
+        .divider span {
+            background: rgba(17, 17, 17, 0.95);
+            padding: 0 15px;
+        }
+
+        /* Social Login */
+        .social-login {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .social-button {
+            flex: 1;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: #fff;
+            text-decoration: none;
+            text-align: center;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .social-button:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .login-container {
+                margin: 10px;
+                padding: 30px 20px;
+                margin-top: 80px;
+            }
+
+            .login-title {
+                font-size: 2rem;
+            }
+
+            .user-type-options {
+                flex-direction: column;
+            }
+
+            .user-type-option {
+                min-width: auto;
+            }
+
+            .social-login {
+                flex-direction: column;
+            }
+
+            .nav-menu {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="particles" id="particles"></div>
+
+   <!-- Navbar (injected) -->
+<div id="navbarMount"></div>
+<script>
+(function(){
+    fetch('navbar.html').then(function(r){ return r.text(); }).then(function(html){
+        var m = document.getElementById('navbarMount');
+        if (m) m.innerHTML = html;
+    }).catch(function(){});
+})();
+</script>
+    <!-- Login Container -->
+    <div class="login-container">
+        <div class="login-header">
+            <h1 class="login-title">Welcome Back</h1>
+            <p class="login-subtitle">Sign in to your account</p>
+        </div>
+
+
+        <!-- Login Form -->
+        <form class="login-form" id="loginForm" method="POST" action="login_process.php">
+            <div class="user-type-selection">
+                <label class="user-type-label">Sign in as:</label>
+                <div class="user-type-options">
+                    <div class="user-type-option">
+                        <input type="radio" id="user" name="userType" value="user" class="user-type-radio" checked>
+                        <label for="user" class="user-type-button">👤 Customer</label>
+                    </div>
+                    <div class="user-type-option">
+                        <input type="radio" id="seller" name="userType" value="seller" class="user-type-radio">
+                        <label for="seller" class="user-type-button">🏪 Seller</label>
+                    </div>
+                    <div class="user-type-option">
+                        <input type="radio" id="admin" name="userType" value="admin" class="user-type-radio">
+                        <label for="admin" class="user-type-button">🛡️ Admin</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <input type="email" name="email" class="form-input" placeholder=" " required>
+                <label class="form-label">Email Address</label>
+            </div>
+
+            <div class="form-group">
+                <input type="password" name="password" class="form-input" placeholder=" " required>
+                <label class="form-label">Password</label>
+            </div>
+
+            <button type="submit" class="login-button">Sign In</button>
+        </form>
+
+<!-- Find this section -->
+<div class="form-links">
+    <a href="#" class="form-link">Forgot Password?</a>
+    <span class="form-link">|</span>
+    <a href="signup_page.html" class="form-link">Create Account</a>
+</div>
+       
+
+        <!-- Social Login -->
+        <div class="divider">
+            <span>or continue with</span>
+        </div>
+        <div class="social-login">
+            <a href="#" class="social-button">📱 Google</a>
+            <a href="#" class="social-button">📘 Facebook</a>
+        </div>
+    </div>
+
+    <script>
+        // Create animated background particles
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 50;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 4 + 4) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Form submission handler
+       /* document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const userType = document.querySelector('input[name="userType"]:checked').value;
+            const email = this.querySelector('input[type="email"]').value;
+            const password = this.querySelector('input[type="password"]').value;
+            
+            // Simulate login process
+            const button = this.querySelector('.login-button');
+            button.textContent = 'Signing In...';
+            button.disabled = true;
+            
+            setTimeout(() => {
+                alert(`Login attempt for ${userType}: ${email}`);
+                button.textContent = 'Sign In';
+                button.disabled = false;
+                
+                // Redirect based on user type
+                switch(userType) {
+                    case 'admin':
+                        // window.location.href = 'admin-dashboard.html';
+                        alert('Redirecting to Admin Dashboard...');
+                        break;
+                    case 'seller':
+                        // window.location.href = 'seller-dashboard.html';
+                        alert('Redirecting to Seller Dashboard...');
+                        break;
+                    default:
+                        // window.location.href = 'user-dashboard.html';
+                        alert('Redirecting to User Dashboard...');
+                }
+            }, 2000);
+        });*/
+
+        // User type selection animation
+        document.querySelectorAll('.user-type-radio').forEach(radio => {
+            radio.addEventListener('change', function() {
+                // Add animation effect when selection changes
+                const button = this.nextElementSibling;
+                button.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    button.style.transform = 'scale(1.02)';
+                }, 100);
+            });
+        });
+
+        // Initialize particles
+        createParticles();
+
+        // Add floating animation to login container
+        const container = document.querySelector('.login-container');
+        let floatDirection = 1;
+        
+        setInterval(() => {
+            container.style.transform = `translateY(${Math.sin(Date.now() / 2000) * 10}px)`;
+        }, 50);
+    </script>
+</body>
+</html>

@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>thriftIN - Premium Pre-owned Fashion</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #000;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        /* Header Styles */
+        .header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            z-index: 1000;
+            padding: 15px 0;
+            transition: all 0.3s ease;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 0px;
+        }
+
+        .logo-img { height: 80px; width: auto; }
+
+        .logo-text {
+            font-size: 25px;
+            font-weight: bold;
+            color: #fff;
+            text-decoration: none;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 5px #fff, 0 0 10px #fff; }
+            to { text-shadow: 0 0 10px #fff, 0 0 20px #fff; }
+        }
+
+        /* Ensure nav groups menu and profile neatly */
+        nav {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+
+        .nav-menu a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-menu a:hover {
+            color: #ccc;
+            transform: translateY(-2px);
+        }
+
+        .nav-menu a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background: #fff;
+            transition: width 0.3s ease;
+        }
+
+        .nav-menu a:hover::after { width: 100%; }
+
+        /* User profile icon - clean, minimal */
+        .profile-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: 1px solid rgba(255,255,255,0.18);
+            background: rgba(255,255,255,0.06);
+            color: #fff;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background .2s ease, transform .2s ease, border-color .2s ease;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+        }
+        .profile-btn:hover {
+            background: rgba(255,255,255,0.12);
+            border-color: rgba(255,255,255,0.28);
+            transform: translateY(-1px);
+        }
+        .profile-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Profile modal - simplified, professional */
+        .profile-modal-backdrop {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            display: none; align-items: center; justify-content: center; z-index: 2000;
+        }
+        .profile-modal {
+            width: 92%; max-width: 900px;
+            background: #0e0e0e;
+            border: 1px solid rgba(255,255,255,0.10);
+            border-radius: 18px; overflow: hidden;
+            box-shadow: 0 28px 90px rgba(0,0,0,0.6);
+        }
+        .profile-hero {
+            height: 110px; background: #111;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            position: relative;
+        }
+        .profile-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 20px 22px;
+        }
+        .profile-title { font-size: 19px; font-weight: 600; color: #f5f5f7; opacity: .95; }
+        .close-btn { background: transparent; border: 0; color: #fff; font-size: 22px; cursor: pointer; width: 34px; height: 34px; border-radius: 50%; display:flex; align-items:center; justify-content:center; }
+        .close-btn:hover { background: rgba(255,255,255,0.08); }
+        .profile-body { padding: 28px 24px; margin-top: -30px; }
+        .avatar { width: 76px; height: 76px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.18); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 28px; margin-right: 18px; background: #2a2a2a; }
+        .user-row { display: flex; align-items: center; margin-bottom: 22px; }
+        .user-name { font-size: 22px; font-weight: 700; color: #f5f5f7; line-height: 1.3; }
+        .user-meta { color: #a1a1a6; font-size: 13px; }
+        .profile-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 22px; }
+        .profile-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 22px; }
+        .profile-card h3 { margin-bottom: 12px; }
+        .profile-card p { line-height: 1.65; margin-bottom: 8px; }
+        .order-item { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px dashed rgba(255,255,255,0.08); }
+        .order-item:last-child{border-bottom:0}
+        .chip { display:inline-block; padding:3px 10px; border-radius:999px; font-size:12px; border:1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.06); margin-left:8px; color:#f5f5f7 }
+        .muted { color:#a1a1a6; font-size: 13px; }
+        @media (max-width: 768px) { .profile-grid { grid-template-columns: 1fr; gap: 16px; } }
+
+        /* Categories Section */
+        .categories-section {
+            background: #000;
+            padding: 50px 0;
+            border-bottom: 1px solid #333;
+            margin-top: 70px;
+        }
+
+        .categories-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .categories-menu {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 40px;
+            list-style: none;
+        }
+
+        .category-item {
+            position: relative;
+        }
+
+        .category-link {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 16px;
+            padding: 10px 15px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            display: block;
+            border: 2px solid transparent;
+        }
+
+        .category-link:hover {
+            background: #fff;
+            color: #000;
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2);
+        }
+
+        .dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: #111;
+            min-width: 200px;
+            border-radius: 10px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            border: 1px solid #333;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .category-item:hover .dropdown {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown a {
+            display: block;
+            padding: 12px 20px;
+            color: #fff;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            border-bottom: 1px solid #333;
+        }
+
+        .dropdown a:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown a:hover {
+            background: #fff;
+            color: #000;
+        }
+
+        /* Hero Section with Video Background */
+        .hero {
+            height: 100vh;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .video-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -2;
+            opacity: 0.3;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(0,0,0,0.8), rgba(255,255,255,0.1));
+            z-index: -1;
+        }
+
+        .hero-content {
+            z-index: 1;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #fff, #ccc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: slideInLeft 1s ease-out 0.5s both;
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .hero p {
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+            animation: slideInRight 1s ease-out 0.7s both;
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 15px 30px;
+            background: linear-gradient(45deg, #fff, #ccc);
+            color: #000;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(255, 255, 255, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
+        }
+
+        .cta-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(255, 255, 255, 0.4);
+        }
+
+        /* Features Section */
+        .features {
+            padding: 100px 0;
+            background: #111;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 3rem;
+            margin-bottom: 50px;
+            color: #fff;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            margin-top: 50px;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(255, 255, 255, 0.2);
+            border-color: #fff;
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: #fff;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+
+        .feature-card p {
+            opacity: 0.8;
+        }
+
+        /* Products Section */
+        .products {
+            padding: 100px 0;
+            background: #000;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat( minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .product-card {
+            background: #111;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .product-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 30px rgba(255, 255, 255, 0.3);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 250px;
+            background: linear-gradient(45deg, #333, #666);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: #fff;
+        }
+        .product-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    border: none;
+    border-radius: 0;
+}
+
+
+        .product-info {
+            padding: 20px;
+        }
+
+        .product-info h3 {
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .product-price {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        /* Floating Animation */
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+
+        @keyframes floating {
+            0% { transform: translate(0, 0px); }
+            50% { transform: translate(0, 15px); }
+            100% { transform: translate(0, -0px); }
+        }
+
+        /* Footer */
+        .footer {
+            background: #111;
+            padding: 50px 0;
+            text-align: center;
+            border-top: 1px solid #333;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .footer-section h3 {
+            color: #ff6b35;
+            margin-bottom: 15px;
+        }
+
+        .footer-section a {
+            color: #ccc;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 8px;
+            transition: color 0.3s ease;
+        }
+
+        .footer-section a:hover {
+            color: #ff6b35;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero p {
+                font-size: 1.2rem;
+            }
+            
+            .nav-menu {
+                display: none;
+            }
+            
+            .categories-menu {
+                gap: 20px;
+                justify-content: flex-start;
+                overflow-x: auto;
+                padding: 10px 0;
+            }
+            
+            .category-link {
+                font-size: 14px;
+                white-space: nowrap;
+            }
+            
+            .dropdown {
+                position: fixed;
+                left: 10px;
+                right: 10px;
+                top: auto;
+                min-width: auto;
+            }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #111;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #fff;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #ccc;
+        }
+    </style>
+</head>
+<body>
+<!-- Find this section in the header -->
+<div id="navbarMount"></div>
+<script>
+(function(){
+    fetch('navbar.html').then(function(r){ return r.text(); }).then(function(html){
+        var m = document.getElementById('navbarMount');
+        if (m) m.innerHTML = html;
+    }).catch(function(){});
+})();
+</script>
+   
+    <!-- Categories Section -->
+    <section class="categories-section">
+        <div class="categories-container">
+           <ul class="categories-menu">
+    <li class="category-item">
+        <a href="products_page.html?category=watches" class="category-link">Branded Watches</a>
+        <div class="dropdown">
+            <a href="products_page.html?category=watches&brand=rolex">Rolex</a>
+            <a href="products_page.html?category=watches&brand=audemars">Audemars Piguet</a>
+            <a href="products_page.html?category=watches&brand=jacob">Jacob & Co</a>
+        </div>
+    </li>
+    <li class="category-item">
+        <a href="products_page.html?category=shoes" class="category-link">Branded Shoes</a>
+        <div class="dropdown">
+            <a href="products_page.html?category=shoes&brand=nike">Nike</a>
+            <a href="products_page.html?category=shoes&brand=adidas">Adidas</a>
+            <a href="products_page.html?category=shoes&brand=puma">Puma</a>
+        </div>
+    </li>
+    <li class="category-item">
+        <a href="products_page.html?category=bags" class="category-link">Luxury Bags</a>
+        <div class="dropdown">
+            <a href="products_page.html?category=bags&brand=gucci">Gucci</a>
+            <a href="products_page.html?category=bags&brand=chanel">Chanel</a>
+            <a href="products_page.html?category=bags&brand=dior">Dior</a>
+        </div>
+    </li>
+    <li class="category-item">
+        <a href="products_page.html?category=gaming" class="category-link">Gaming</a>
+        <div class="dropdown">
+            <a href="products_page.html?category=gaming&brand=playstation">PlayStation</a>
+            <a href="products_page.html?category=gaming&brand=xbox">Xbox</a>
+            <a href="products_page.html?category=gaming&brand=nintendo">Nintendo</a>
+        </div>
+    </li>
+    <li class="category-item">
+        <a href="products_page.html?category=gadgets" class="category-link">Gadgets</a>
+        <div class="dropdown">
+            <a href="products_page.html?category=gadgets&brand=apple">Apple</a>
+            <a href="products_page.html?category=gadgets&brand=rog">ROG</a>
+            <a href="products_page.html?category=gadgets&brand=sony">Sony</a>
+        </div>
+    </li>
+</ul>
+
+        </div>
+    </section>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <!-- Video placeholder - you'll need to add your own video file -->
+        <video class="video-bg" autoplay muted loop>
+            <source src="hero-video.mp4" type="video/mp4">
+            <!-- Fallback for browsers that don't support video -->
+        </video>
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1>thriftIN</h1>
+            <p>Premium Pre-owned Fashion & Lifestyle</p>
+            <a href="#products" class="cta-button">Shop Now</a>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="about">
+        <div class="container">
+            <h2 class="section-title">Why Choose thriftIN?</h2>
+            <div class="features-grid">
+                <div class="feature-card floating">
+                    <div class="feature-icon">♻️</div>
+                    <h3>Sustainable Fashion</h3>
+                    <p>Give pre-loved items a new life while reducing environmental impact through conscious shopping.</p>
+                </div>
+                <div class="feature-card floating" style="animation-delay: 0.5s;">
+                    <div class="feature-icon">💎</div>
+                    <h3>Premium Quality</h3>
+                    <p>Each item is carefully curated and authenticated to ensure you get only the best quality pieces.</p>
+                </div>
+                <div class="feature-card floating" style="animation-delay: 1s;">
+                    <div class="feature-icon">💰</div>
+                    <h3>Affordable Luxury</h3>
+                    <p>Access designer brands and luxury items at a fraction of their original price.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+<!-- Products Section -->
+<section class="products" id="products">
+    <div class="container">
+        <h2 class="section-title">Featured Collections</h2>
+        <div class="product-grid">
+            <div class="product-card" data-category="watches">
+    <div class="product-image">
+        <video class="product-video" autoplay muted loop playsinline>
+    <source src="videoplayback.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+</video>
+
+    </div>
+    <div class="product-info">
+        <h3>Branded Watches</h3>
+        <p class="product-price">₹4,999 - ₹89,999</p>
+    </div>
+</div>
+<div class="product-card" data-category="shoes">
+    <div class="product-image">
+        <video class="product-video" autoplay muted loop playsinline>
+            <source src="shoes.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+    <div class="product-info">
+        <h3>Branded Shoes</h3>
+        <p class="product-price">₹3,499 - ₹19,999</p>
+    </div>
+</div>
+ 
+            <div class="product-card" data-category="bags">
+    <div class="product-image">
+        <video class="product-video" autoplay muted loop playsinline>
+            <source src="bag.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+    <div class="product-info">
+        <h3>Luxury Bags</h3>
+        <p class="product-price">₹5,999 - ₹49,999</p>
+    </div>
+</div>
+
+            <div class="product-card" data-category="gaming">
+    <div class="product-image">
+        <video class="product-video" autoplay muted loop playsinline>
+            <source src="electronics.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+    <div class="product-info">
+        <h3>Gaming</h3>
+        <p class="product-price">₹2,999 - ₹59,999</p>
+    </div>
+</div>
+
+            </div>
+            <div class="product-card" data-category="gadgets">
+    <div class="product-image">
+        <video class="product-video" autoplay muted loop playsinline>
+            <source src="gadget.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+    <div class="product-info">
+        <h3>Gadgets</h3>
+        <p class="product-price">₹1,499 - ₹25,999</p>
+    </div>
+</div>
+    </div>
+</section>
+
+    <!-- Footer -->
+    <footer class="footer" id="contact">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+				<!-- Find this section in the footer -->
+<div class="footer-section">
+
+            <p>&copy; 2025 thriftIN. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Header scroll effect
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('.header');
+            if (window.scrollY > 100) {
+                header.style.background = 'rgba(0, 0, 0, 0.95)';
+            } else {
+                header.style.background = 'rgba(0, 0, 0, 0.9)';
+            }
+        });
+
+        // Intersection Observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe feature cards for animation
+        document.querySelectorAll('.feature-card, .product-card').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(50px)';
+            card.style.transition = 'all 0.6s ease';
+            observer.observe(card);
+        });
+
+        // Add parallax effect to hero section
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const hero = document.querySelector('.hero');
+            const videoBackground = document.querySelector('.video-bg');
+            
+            if (hero && videoBackground) {
+                videoBackground.style.transform = `translateY(${scrolled * 0.5}px)`;
+            }
+        });
+
+        // Add hover effect to product cards
+        document.querySelectorAll('.product-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'scale(1.05) rotateY(5deg)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'scale(1) rotateY(0deg)';
+            });
+        });
+
+        // Create floating particles effect
+        function createParticle() {
+            const particle = document.createElement('div');
+            particle.style.position = 'fixed';
+            particle.style.width = '4px';
+            particle.style.height = '4px';
+            particle.style.background = '#fff';
+            particle.style.borderRadius = '50%';
+            particle.style.pointerEvents = 'none';
+            particle.style.zIndex = '999';
+            particle.style.left = Math.random() * window.innerWidth + 'px';
+            particle.style.top = window.innerHeight + 'px';
+            particle.style.opacity = '0.7';
+            
+            document.body.appendChild(particle);
+            
+            const animationDuration = Math.random() * 3000 + 2000;
+            const horizontalMovement = (Math.random() - 0.5) * 100;
+            
+            particle.animate([
+                { transform: 'translateY(0px) translateX(0px)', opacity: 0.7 },
+                { transform: `translateY(-${window.innerHeight + 100}px) translateX(${horizontalMovement}px)`, opacity: 0 }
+            ], {
+                duration: animationDuration,
+                easing: 'linear'
+            }).onfinish = () => {
+                particle.remove();
+            };
+        }
+
+        // Create particles periodically
+        setInterval(createParticle, 300);
+
+        // Add dynamic typing effect to hero text
+        const heroTitle = document.querySelector('.hero h1');
+        const originalText = heroTitle.textContent;
+        heroTitle.textContent = '';
+        
+        function typeText(element, text, speed = 100) {
+            let i = 0;
+            const timer = setInterval(() => {
+                element.textContent += text[i];
+                i++;
+                if (i >= text.length) {
+                    clearInterval(timer);
+                }
+            }, speed);
+        }
+        
+        // Start typing effect after page load
+        setTimeout(() => {
+            typeText(heroTitle, originalText, 150);
+        }, 1000);
+        
+        // Redirect featured collection clicks to products page with category
+        document.querySelectorAll('.products .product-card').forEach(card => {
+            card.style.cursor = 'pointer';
+            card.addEventListener('click', function() {
+                const category = this.getAttribute('data-category') || 'all';
+                window.location.href = `products_page.html${category && category !== 'all' ? `?category=${encodeURIComponent(category)}` : ''}`;
+            });
+        });
+
+        // Profile modal handlers are now in navbar.html
+
+        // Easter egg: show a toast when typing "thrift"
+        (function(){
+            const secret = 'thrift';
+            let buffer = '';
+            window.addEventListener('keydown', (e)=>{
+                buffer += (e.key||'').toLowerCase();
+                if (buffer.length > secret.length) buffer = buffer.slice(-secret.length);
+                if (buffer === secret) {
+                    buffer='';
+                    alert('♻️ Thrift Tip: Buying pre-owned saves CO₂ and your wallet!');
+                }
+            });
+        })();
+    </script>
+</body>
+</html>

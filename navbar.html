@@ -1,0 +1,346 @@
+<style>
+/* Extracted Header Styles from Home (higher specificity to override page headers) */
+body .header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    z-index: 2000;
+    padding: 15px 0;
+    transition: all 0.3s ease;
+    /* for animated layers */
+    position: fixed;
+    overflow: hidden;
+}
+/* Subtle animated background layers */
+body .header::before, body .header::after {
+    content: none;
+    animation: none;
+    background: none;
+}
+/* Soft moving gradient shimmer */
+body .header::before { content: none; }
+/* Very light grain/noise for depth */
+body .header::after { content: none; }
+@keyframes navShimmer {
+  0%   { --x:-40%; --x2:140%; }
+  50%  { --x:60%;  --x2:40%; }
+  100% { --x:-40%; --x2:140%; }
+}
+@keyframes navDrift {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+/* Floating dots like homepage stars, constrained to header height */
+@keyframes navFloat {
+  0%   { transform: translateY(0); opacity:.45; }
+  70%  { opacity:.30; }
+  100% { transform: translateY(70px); opacity:0; }
+}
+/* Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  body .header::before, body .header::after { animation: none; }
+}
+
+body .nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    width: 100%;
+}
+body .logo-container {
+    display: flex;
+    align-items: center;
+    gap: 0px;
+    flex: 0 0 auto;
+    margin-right: auto;
+}
+
+body .logo-img { height: 80px; width: auto; }
+
+body .logo-text {
+    font-size: 25px;
+    font-weight: bold;
+    color: #fff;
+    text-decoration: none;
+    animation: glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+    from { text-shadow: 0 0 5px #fff, 0 0 10px #fff; }
+    to { text-shadow: 0 0 10px #fff, 0 0 20px #fff; }
+}
+
+/* Ensure nav groups menu and profile neatly */
+body nav {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex: 0 0 auto;
+}
+
+body .nav-menu {
+    display: flex;
+    align-items: center;
+    list-style: none;
+    gap: 30px;
+}
+
+body .nav-menu a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 500;
+    font-family: 'Arial', sans-serif;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+body .nav-menu a:hover {
+    color: #ccc;
+    transform: translateY(-2px);
+}
+
+body .nav-menu a::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: -5px;
+    left: 0;
+    background: #fff;
+    transition: width 0.3s ease;
+}
+
+body .nav-menu a:hover::after { width: 100%; }
+
+/* Active state */
+body .nav-menu a.active { color: #fff; }
+
+/* User profile icon - clean, minimal */
+body .profile-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.18);
+    background: rgba(255,255,255,0.06);
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background .2s ease, transform .2s ease, border-color .2s ease;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+}
+body .profile-btn:hover {
+    background: rgba(255,255,255,0.12);
+    border-color: rgba(255,255,255,0.28);
+    transform: translateY(-1px);
+}
+body .profile-btn:active { transform: translateY(0); }
+
+.profile-dropdown a {
+    display:block;
+    color:#fff;
+    text-decoration:none;
+    padding:8px 12px;
+    border-radius:8px;
+    transition: all 0.2s;
+}
+.profile-dropdown a:hover { background: rgba(255,255,255,0.1); }
+
+.profile-dropdown .user-name { font-weight:700; margin-bottom:5px; color:#f5f5f7; }
+.profile-dropdown .user-meta { font-size:13px; color:#a1a1a6; margin-bottom:8px; }
+</style>
+
+<header class="header">
+    <div class="nav-container">
+        <div class="logo-container">
+            <img src="logo1.png" alt="thriftIN Logo" class="logo-img">
+            <a href="2nd_street_india.html" class="logo-text">thriftIN</a>
+        </div>
+        <nav>
+            <ul class="nav-menu">
+                <li><a href="2nd_street_india.html" data-path="2nd_street_india.html">Home</a></li>
+                <li><a href="products_page.html" data-path="products_page.html">Products</a></li>
+                <li><a href="about_page.html" data-path="about_page.html">About</a></li>
+                <li><a href="contact_page.html" data-path="contact_page.html">Contact</a></li>
+                <li><a href="login_page.html" data-path="login_page.html">Login</a></li>
+            </ul>
+            <div class="profile-wrapper" style="position: relative;">
+                <button id="profileIcon" class="profile-btn" title="Profile" aria-label="Profile">?</button>
+                <div id="profileDropdown" class="profile-dropdown" style="display:none; position:absolute; right:0; top:48px; background:#0e0e0e; border:1px solid rgba(255,255,255,0.1); border-radius:12px; min-width:250px; padding:15px; z-index:2000; box-shadow:0 8px 30px rgba(0,0,0,0.5);">
+                    <div class="profile-loading">Loading...</div>
+                </div>
+            </div>
+        </nav>
+    </div>
+</header>
+<script>
+// Header scroll effect for consistent visual
+(function(){
+    const header = document.querySelector('.header');
+    function update(){
+        if (!header) return;
+        if (window.scrollY > 100) header.style.background = 'rgba(0, 0, 0, 0.95)';
+        else header.style.background = 'rgba(0, 0, 0, 0.9)';
+    }
+    window.addEventListener('scroll', update, { passive: true });
+    update();
+})();
+
+// Active link highlighting based on current page
+(function(){
+    const path = (location.pathname.split('/').pop() || '2nd_street_india.html').toLowerCase();
+    document.querySelectorAll('.nav-menu a').forEach(a => {
+        const target = (a.getAttribute('data-path') || '').toLowerCase();
+        if (target && path === target) a.classList.add('active');
+        else a.classList.remove('active');
+    });
+})();
+
+// Fetch and display user profile in dropdown
+document.addEventListener('DOMContentLoaded', async () => {
+    const profileIcon = document.getElementById('profileIcon');
+    const dropdown = document.getElementById('profileDropdown');
+
+    async function loadProfile(){
+        try {
+            const res = await fetch('get_user_profile.php', { credentials:'include' });
+            const data = await res.json();
+
+            if(data.ok && data.profile){
+                const initial = (data.profile.firstName || data.profile.email || '?')[0].toUpperCase();
+                profileIcon.textContent = initial;
+
+                dropdown.innerHTML = `
+                    <div class="user-name">${[data.profile.firstName||'', data.profile.lastName||''].join(' ').trim() || '—'}</div>
+                    <div class="user-meta">Member since ${data.profile.createdAt ? new Date(data.profile.createdAt).toLocaleDateString() : '—'}</div>
+                    <hr style="border-color: rgba(255,255,255,0.1); margin:8px 0;">
+                    <a href="cart.php">View Cart</a>
+                    <a href="products_page.html">Shop Products</a>
+                    <a href="profile_page.html">Account Settings</a>
+                    <a href="logout.php">Logout</a>
+                `;
+            } else {
+                profileIcon.textContent = '?';
+                dropdown.innerHTML = `<a href="login_page.html">Login</a>`;
+            }
+        } catch(e) {
+            profileIcon.textContent = '?';
+            dropdown.innerHTML = `<a href="login_page.html">Login</a>`;
+            console.error('Profile fetch error:', e);
+        }
+    }
+
+    loadProfile();
+
+    // Toggle dropdown on click
+    profileIcon.addEventListener('click', (e)=>{
+        e.stopPropagation();
+        dropdown.style.display = dropdown.style.display === 'flex' ? 'none' : 'flex';
+        dropdown.style.flexDirection = 'column';
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', ()=>{
+        if(dropdown) dropdown.style.display = 'none';
+    });
+});
+
+// Navbar animation disabled per request
+</script>
+
+<script>
+// Profile modal handlers
+document.addEventListener('DOMContentLoaded', () => {
+    const profileIcon = document.getElementById('profileIcon');
+    let backdrop;
+    function openProfileModal(data){
+        backdrop = document.createElement('div');
+        backdrop.className = 'profile-modal-backdrop';
+        backdrop.style.display = 'flex';
+        backdrop.innerHTML = `
+            <div class="profile-modal">
+            <div class="profile-hero">
+                <div class="profile-header">
+                <div class="profile-title">User Profile</div>
+                <button class="close-btn" aria-label="Close">×</button>
+                </div>
+            </div>
+            <div class="profile-body">
+                <div class="user-row">
+                <div class="avatar">${(data.profile.firstName||data.profile.email||'?').toString().trim().charAt(0).toUpperCase()}</div>
+                <div>
+                    <div class="user-name">${[data.profile.firstName||'', data.profile.lastName||''].join(' ').trim() || data.profile.email || '—'}</div>
+                    <div class="user-meta">Member since ${data.profile.createdAt ? new Date(data.profile.createdAt).toLocaleDateString() : '—'}</div>
+                </div>
+                </div>
+                <div class="profile-grid">
+                <div class="profile-card">
+                    <h3>Account</h3>
+                    <p><strong>Name:</strong> ${[data.profile.firstName||'', data.profile.lastName||''].join(' ').trim() || '—'}</p>
+                    <p><strong>Email:</strong> ${data.profile.email || '—'}</p>
+                    <p><strong>Phone:</strong> ${data.profile.phone || '—'}</p>
+                    <p><strong>Location:</strong> ${(data.profile.city||'') + (data.profile.state? (data.profile.city? ', ':'')+data.profile.state:'')}</p>
+                </div>
+                <div class="profile-card">
+                    <h3>Recent Orders</h3>
+                    ${data.orders && data.orders.length ? data.orders.map(o => `
+                    <div class="order-item">
+                        <div style="min-width:90px"><strong>#${o.order_id}</strong></div>
+                        <div>
+                        <div>Status: <span class="chip">${o.order_status}</span></div>
+                        <div>Total: ₹${Number(o.total_amount||0).toLocaleString()}</div>
+                        <div class="muted">${o.created_at || ''}</div>
+                        </div>
+                    </div>
+                    `).join('') : '<div class="muted">No orders yet.</div>'}
+                </div>
+                <div class="profile-card">
+                    <h3>Quick Links</h3>
+                    <p><a href="cart.php" style="color:#fff">View Cart</a></p>
+                    <p><a href="products_page.html" style="color:#fff">Shop Products</a></p>
+                    <p class="muted">Easter egg: Type "thrift" on this page 😉</p>
+                </div>
+                </div>
+            </div>
+            </div>`;
+        document.body.appendChild(backdrop);
+        backdrop.addEventListener('click', (e)=>{ if(e.target===backdrop) closeProfileModal(); });
+        backdrop.querySelector('.close-btn').addEventListener('click', closeProfileModal);
+    }
+    function closeProfileModal(){ if(backdrop){ backdrop.remove(); backdrop=null; } }
+
+    if (profileIcon) {
+        profileIcon.addEventListener('click', async ()=>{
+            try {
+                const res = await fetch('get_user_profile.php', { credentials: 'include' });
+                const data = await res.json();
+                if (!data.ok && data.error === 'not_authenticated') {
+                    window.location.href = 'login_page.html';
+                    return;
+                }
+                if (data.ok) {
+                    const initial = ((data.profile.firstName||data.profile.email||'?').toString().trim().charAt(0) || '?').toUpperCase();
+                    profileIcon.textContent = initial;
+                    openProfileModal(data);
+                } else {
+                    alert('Unable to load profile');
+                }
+            } catch (e) {
+                alert('Network error');
+            }
+        });
+    }
+});
+</script>

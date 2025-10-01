@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Cart - thriftIN</title>
+  <style>
+    body { 
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+      color: #fff; 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+      margin: 0; 
+      padding: 0; 
+      min-height: 100vh;
+    }
+    
+    .cart-container { 
+      max-width: 1200px; 
+      margin: 40px auto; 
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 30px; 
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+    
+    h1 {
+      text-align: center;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 30px;
+      font-size: 2.5rem;
+      font-weight: 700;
+    }
+    
+    .cart-table { 
+      width: 100%; 
+      border-collapse: collapse; 
+      margin-bottom: 30px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 15px;
+      overflow: hidden;
+    }
+    
+    th, td { 
+      padding: 20px 15px; 
+      text-align: left;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    th { 
+      background: rgba(255, 255, 255, 0.08);
+      font-weight: 600;
+      color: #e0e0e0;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-size: 0.9rem;
+    }
+    
+    .product-cell {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .product-img { 
+      width: 80px; 
+      height: 80px; 
+      border-radius: 12px;
+      object-fit: cover;
+      border: 2px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .product-info h3 {
+      margin: 0 0 5px 0;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #f5f5f5;
+    }
+    
+    .product-info p {
+      margin: 0;
+      color: #a0a0a0;
+      font-size: 0.9rem;
+    }
+    
+    .quantity-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 25px;
+      padding: 5px;
+    }
+    
+    .qty-btn {
+      width: 35px;
+      height: 35px;
+      border: none;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+    
+    .qty-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+    
+    .qty-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .quantity-display {
+      min-width: 40px;
+      text-align: center;
+      font-weight: 600;
+      font-size: 1.1rem;
+      color: #f5f5f5;
+    }
+    
+    .remove-btn {
+      background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+    }
+    
+    .remove-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+    }
+    
+    .price-cell {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #4ade80;
+    }
+    
+    .total-cell {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #60a5fa;
+    }
+    
+    .cart-summary {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 30px;
+    }
+    
+    .grand-total {
+      font-size: 1.8rem;
+      font-weight: 700;
+      text-align: center;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin: 0;
+    }
+    
+    .checkout-btn { 
+      width: 100%;
+      padding: 18px 30px; 
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white; 
+      border: none; 
+      border-radius: 15px; 
+      font-weight: 700; 
+      font-size: 1.1rem;
+      cursor: pointer; 
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    .checkout-btn:hover { 
+      transform: translateY(-3px);
+      box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
+    }
+    
+    .empty-cart {
+      text-align: center;
+      padding: 60px 20px;
+      color: #a0a0a0;
+    }
+    
+    .empty-cart h2 {
+      font-size: 2rem;
+      margin-bottom: 15px;
+      color: #e0e0e0;
+    }
+    
+    .empty-cart p {
+      font-size: 1.1rem;
+      margin-bottom: 30px;
+    }
+    
+    .continue-shopping {
+      display: inline-block;
+      padding: 15px 30px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      text-decoration: none;
+      border-radius: 25px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+    }
+    
+    .continue-shopping:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    }
+    
+    @media (max-width: 768px) {
+      .cart-container {
+        margin: 20px;
+        padding: 20px;
+      }
+      
+      .cart-table {
+        font-size: 0.9rem;
+      }
+      
+      th, td {
+        padding: 15px 10px;
+      }
+      
+      .product-cell {
+        flex-direction: column;
+        text-align: center;
+        gap: 10px;
+      }
+      
+      .product-img {
+        width: 60px;
+        height: 60px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="cart-container">
+    <h1>Your Shopping Cart</h1>
+    <div id="cartTable"></div>
+    <div id="cartSummary" class="cart-summary" style="display: none;">
+      <h3 class="grand-total" id="grandTotal">Grand Total: ₹0</h3>
+    </div>
+    <button class="checkout-btn" onclick="checkout()" style="display: none;">Proceed to Checkout</button>
+  </div>
+
+  <script>
+    let cart = JSON.parse(localStorage.getItem("cart_items")) || [];
+    let container = document.getElementById("cartTable");
+    let summaryContainer = document.getElementById("cartSummary");
+    let checkoutBtn = document.querySelector(".checkout-btn");
+
+    function renderCart() {
+      if (cart.length === 0) {
+        container.innerHTML = `
+          <div class="empty-cart">
+            <h2>Your cart is empty</h2>
+            <p>Looks like you haven't added any items to your cart yet.</p>
+            <a href="products_page.html" class="continue-shopping">Continue Shopping</a>
+          </div>
+        `;
+        summaryContainer.style.display = "none";
+        checkoutBtn.style.display = "none";
+        return;
+      }
+
+      let total = 0;
+      let html = `
+        <table class="cart-table">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Condition</th>
+              <th>Price</th>
+              <th>Quantity</th>
+              <th>Total</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      cart.forEach((item, index) => {
+        let subtotal = item.price * item.quantity;
+        total += subtotal;
+        html += `
+          <tr>
+            <td>
+              <div class="product-cell">
+                <img src="${item.image}" alt="${item.title}" class="product-img">
+                <div class="product-info">
+                  <h3>${item.title}</h3>
+                </div>
+              </div>
+            </td>
+            <td>${item.condition || 'N/A'}</td>
+            <td class="price-cell">₹${item.price.toLocaleString()}</td>
+            <td>
+              <div class="quantity-controls">
+                <button class="qty-btn" onclick="decreaseQuantity(${index})" ${item.quantity <= 1 ? 'disabled' : ''}>-</button>
+                <span class="quantity-display">${item.quantity}</span>
+                <button class="qty-btn" onclick="increaseQuantity(${index})">+</button>
+              </div>
+            </td>
+            <td class="total-cell">₹${subtotal.toLocaleString()}</td>
+            <td>
+              <button class="remove-btn" onclick="removeItem(${index})">Remove</button>
+            </td>
+          </tr>
+        `;
+      });
+
+      html += `
+          </tbody>
+        </table>
+      `;
+
+      container.innerHTML = html;
+      document.getElementById("grandTotal").textContent = `Grand Total: ₹${total.toLocaleString()}`;
+      summaryContainer.style.display = "block";
+      checkoutBtn.style.display = "block";
+    }
+
+    function increaseQuantity(index) {
+      cart[index].quantity += 1;
+      localStorage.setItem("cart_items", JSON.stringify(cart));
+      renderCart();
+    }
+
+    function decreaseQuantity(index) {
+      if (cart[index].quantity > 1) {
+        cart[index].quantity -= 1;
+        localStorage.setItem("cart_items", JSON.stringify(cart));
+        renderCart();
+      }
+    }
+
+    function removeItem(index) {
+      if (confirm("Are you sure you want to remove this item from your cart?")) {
+        cart.splice(index, 1);
+        localStorage.setItem("cart_items", JSON.stringify(cart));
+        renderCart();
+      }
+    }
+
+    function checkout() {
+      if (cart.length === 0) {
+        alert("Your cart is empty!");
+        return;
+      }
+
+      // Send cart to checkout.php
+      const form = document.createElement("form");
+      form.method = "POST";
+      form.action = "checkout.php";
+
+      const input = document.createElement("input");
+      input.type = "hidden";
+      input.name = "cart";
+      input.value = JSON.stringify(cart);
+      form.appendChild(input);
+
+      document.body.appendChild(form);
+      form.submit();
+    }
+
+    // Initialize cart on page load
+    renderCart();
+  </script>
+</body>
+</html>
